@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         unzip \
         vim \
         zlib1g-dev \
+        python-pydot \
         && \
     apt-get clean && \
     apt-get autoremove && \
@@ -53,6 +54,8 @@ RUN apt-get update && apt-get install -y \
 		python-pandas \
 		python-sklearn \
 		python-sympy \
+    python-skimage \
+    python-progressbar \
 		&& \
 	apt-get clean && \
 	apt-get autoremove && \
@@ -71,31 +74,50 @@ RUN pip --no-cache-dir install --upgrade ipython && \
 		sphinx \
 		wheel \
 		zmq \
+    protobuf \
 		&& \
 	python -m ipykernel.kernelspec
 
+
 # Install Caffe
+#RUN echo "Install Caffe..."
 #ENV CAFFE_ROOT=/opt/caffe
 #WORKDIR $CAFFE_ROOT
 
 # FIXME: clone a specific git tag and use ARG instead of ENV once DockerHub supports this.
 #ENV CLONE_TAG=master
-
 #RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git . && \
 #    for req in $(cat python/requirements.txt) pydot; do pip install $req; done && \
 #    mkdir build && cd build && \
 #    cmake -DCPU_ONLY=1 .. && \
 #    make -j"$(nproc)"
 
-#ENV PYCAFFE_ROOT $CAFFE_ROOT/python
-#ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
-#ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
+# Install Caffe2
+RUN echo "Install Caffe2..."
+
+ENV CAFFE_ROOT=/opt/caffe2
+ENV CAFFE_INSTALL=/opt
+WORKDIR $CAFFE_INSTALL
+
+RUN git clone --recursive https://github.com/caffe2/caffe2.git && \
+  cd caffe2 && \
+  make && \
+  cd build && \
+  make install 
+
+ENV PYCAFFE_ROOT $CAFFE_ROOT/build
+ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
+ENV PATH $PYCAFFE_ROOT:$PATH
+ENV LD_LIBRARY_PATH=$PYCAFFE_ROOT/caffe2:$LD_LIBRARY_PATH
+
+# export PYTHONPATH=/opt/caffe2/build
+# export LD_LIBRARY_PATH=/opt/caffe2/build/caffe2:$LD_LIBRARY_PATH
 #RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
 # Install TensorFlow
 RUN echo "Install TensorFlow related stuff..."
 
-ARG TENSORFLOW_VERSION=0.8.0
+ARG TENSORFLOW_VERSION=1.1.0
 ARG TENSORFLOW_ARCH=cpu
 
 # Install TensorFlow
