@@ -174,6 +174,31 @@ RUN pip --no-cache-dir install BigDL==0.1.1rc0
 RUN echo "Installiere awscli..."
 RUN pip --no-cache-dir install awscli
 
+# Install google cloud SDK
+RUN echo "Installiere Google Cloud SDK..."
+ENV CLOUD_SDK_VERSION 161.0.0
+RUN apt-get update
+RUN apt-get install -y apt-transport-https
+
+RUN export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
+    echo "deb https://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" > /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    curl --retry 3 --insecure https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+    apt-get update
+
+RUN apt-get install -y google-cloud-sdk=${CLOUD_SDK_VERSION}-0 \
+        google-cloud-sdk-app-engine-python \
+        google-cloud-sdk-app-engine-java \
+        google-cloud-sdk-app-engine-go \
+        google-cloud-sdk-datalab \
+        google-cloud-sdk-datastore-emulator \
+        google-cloud-sdk-pubsub-emulator \
+        google-cloud-sdk-bigtable-emulator \
+        kubectl
+
+RUN gcloud config set core/disable_usage_reporting true && \
+    gcloud config set component_manager/disable_update_check true && \
+    gcloud config set metrics/environment github_docker_image
+
 
 # Set up our notebook config.
 COPY jupyter_notebook_config.py /root/.jupyter/
