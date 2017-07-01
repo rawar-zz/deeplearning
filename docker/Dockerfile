@@ -168,7 +168,9 @@ RUN curl -sL --retry 3 \
 
 # Install BigDL
 RUN echo "Installiere BigDL..."
-RUN pip --no-cache-dir install BigDL==0.1.1rc0
+RUN pip --no-cache-dir install BigDL==0.1.1rc0 \
+  seaborn \
+  wordcloud
 
 # Install awscli
 RUN echo "Installiere awscli..."
@@ -199,6 +201,16 @@ RUN gcloud config set core/disable_usage_reporting true && \
     gcloud config set component_manager/disable_update_check true && \
     gcloud config set metrics/environment github_docker_image
 
+# Install SparkNet
+RUN echo "Installiere SparkNet..."
+WORKDIR /opt
+RUN git clone https://github.com/amplab/SparkNet.git
+ENV SPARKNET_HOME=/opt/SparkNet
+WORKDIR $SPARKNET_HOME
+RUN echo "deb https://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+RUN apt-get update
+RUN apt-get install sbt
 
 # Set up our notebook config.
 COPY jupyter_notebook_config.py /root/.jupyter/
@@ -230,10 +242,15 @@ COPY notebooks/kapitel6/* /root/notebooks/kapitel6/
 COPY run_jupyter.sh /root/
 
 # TensorBoard port
+RUN echo "TensorBoard nutzt Port 6006..."
 EXPOSE 6006
 
-RUN echo "Gebe Jupyter Notebook Port frei"
+RUN echo "Jupyter Notebook startet auf Port 8888..."
 EXPOSE 8888
+
+RUN echo "SparkUI nutzt Port 4040 und 4041..."
+EXPOSE 4040
+EXPOSE 4041
 
 WORKDIR "/root"
 CMD ["/bin/bash"]
