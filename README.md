@@ -114,5 +114,19 @@ $ tensorboard --logdir=path/to/log-directory
 
 gestartet werden. Danach lässt sich TensorBoard mit einem Webbrowser unter `http://localhost:6006` erreichen.
 
-
 ### Cloud-Umgebungen nutzen
+
+Der Docker Container zum Buch enthält zwei Schnittstellen zu Cloud Anbietern. Enthalten sind dabei die 
+[AWS-Cli](https://aws.amazon.com/de/cli/) für die Nutzung von 
+[Amazon Web Service](https://aws.amazon.com/de/) und [Googles Cloud SDK](https://cloud.google.com/sdk/) 
+für die Nutzung von [Googles Cloud Platform](https://cloud.google.com). 
+
+Für die Nutzung der Kommandozeilen-Tool sind gültige Accounts nötig. Sollten diese nicht bestehen, kann
+man sich sowohl bei AWS als auch GCP kostenlos anmelden. Allein die Nutzung der jeweiligen Dienste kostet
+Geld.
+
+Damit der Docker Container die richtigen Anmelde-Daten nutzen kann, sollten diese innerhalb der
+Datei `.boto` konfiguriert werden. Wie dies für das GCP SDK erfolgen kann, findet sich 
+[hier](https://cloud.google.com/storage/docs/boto-gsutil). Für AWS Cli findest sich ein 
+Konfigurationsbeispiel [hier](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html).
+
