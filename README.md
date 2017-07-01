@@ -1,4 +1,4 @@
-# Praxiseinstieg Deeo Learning  
+# Praxiseinstieg Deep Learning  
 Dieses Repository soll ein Praxiseinstieg in die Arbeit mit TensorFlow sein. 
 Es enhält alle Quellcodes zu den Beispielen meines Buchs für O'Reilly 
 Praxiseinstieg Deep Learning.
@@ -66,8 +66,53 @@ Der Docker Conatiner zum Buch installiert folgende Softwarepakere:
 
 ## Nutzung des Docker Containers
 
+Der Docker Container zum Buch lässt sich auf verschiedene Arten nutzen. Um den Container zu starten
+und nutzen zu können, lässt sich über die Kommandozeile eines Terminalfensters folgender Befehl nutzen:
+
+```
+$ docker run -it -p 8888:8888 -p 6006:6006 rawar/deeplearning:latest bash
+```
+
+Ausserdem lässt sich der Docker Container auch über grafische Benutzeroberflächen wie  [Kitematic](https://kitematic.com)
+nutzen. 
+
 ### Jupyter-Notebook nutzen
 
+Um die Anwendung Jupyter-Notebook mit dem Docker Container zu starten gibt es zwei Möglichkeiten:
+
+* Über die Kommandozeile eines Terminalfensters kann mit Hilfe von
+
+```
+$ docker run -it -p 8888:8888 -p 6006:6006 rawar/deeplearning:latest ./run_jupyter.sh
+```
+
+direkt die Webanwendung gestartet werden. Oder man nutzt grafische Oberflächen wie [Kitematic](https://kitematic.com)
+dafür. 
+
+* Man startet den Docker Container mit
+
+```
+$ docker run -it -p 8888:8888 -p 6006:6006 rawar/deeplearning:latest bash
+```
+
+und startet die Jupyter-Notebook Anwendung über die Bash mit Hilfe von
+
+```
+$ ./run_jupyter
+```
+
+Danach lässt sich die Jupyter-Notebook-Anwendung über einen Webbrowser unter `http://localhost:8888` erreichen.
+Im Anschluss daran, findet man alle Beispiele zu den Kapiteln im Verzeichnis `notebooks` wieder.
+
 ### TensorBoard nutzen
+
+Um die Webanwendung TensorBoard nutzen zu können, muss diese mit Hilfe von
+
+```
+$ tensorboard --logdir=path/to/log-directory
+```
+
+gestartet werden. Danach lässt sich TensorBoard mit einem Webbrowser unter `http://localhost:6006` erreichen.
+
 
 ### Cloud-Umgebungen nutzen
