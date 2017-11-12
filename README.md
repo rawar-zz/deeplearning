@@ -73,7 +73,7 @@ Der Docker Container zum Buch lässt sich auf verschiedene Arten nutzen. Um den 
 und nutzen zu können, lässt sich über die Kommandozeile eines Terminalfensters folgender Befehl nutzen:
 
 ```
-$ docker run -it -p 8888:8888 -p 6006:6006 rawar/deeplearning:latest bash
+$ docker run -it -p 8888:8888 -p 6006:6006 deeplearning:latest bash
 ```
 
 Ausserdem lässt sich der Docker Container auch über grafische Benutzeroberflächen wie  [Kitematic](https://kitematic.com)
