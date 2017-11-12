@@ -1,6 +1,6 @@
 # Praxiseinstieg Deep Learning  
 
-![book cover](https://www.oreilly.de/common/images/cover_masterid/gross/12840.jpg){:width="350px"}
+![book cover](https://www.oreilly.de/common/images/cover_masterid/gross/12840.jpg)
 
 Dieses Repository soll ein Praxiseinstieg in die Arbeit mit TensorFlow und Caffe/Caffe2 sein. 
 Es enhält alle Quellcodes zu den Beispielen meines Buchs für O'Reilly 
