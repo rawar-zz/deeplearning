@@ -53,7 +53,7 @@ welche die Installation vereinfachen.
 
 ## Inhalt des Docker Containers
 
-Der Docker Conatiner zum Buch installiert folgende Softwarepakere:
+Der Docker Conatiner zum Buch installiert folgende Softwarepakete:
 
 * Python 2.7
 * IPython
