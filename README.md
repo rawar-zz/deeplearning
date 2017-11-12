@@ -67,6 +67,8 @@ Der Docker Conatiner zum Buch installiert folgende Softwarepakete:
 * AWS CLI
 * Google Cloud SDK
 
+Drüber hinaus sind die Listings und Beispiele aus dem Buch enthalten. 
+
 ## Nutzung des Docker Containers
 
 Der Docker Container zum Buch lässt sich auf verschiedene Arten nutzen. Um den Container zu starten
@@ -101,7 +103,7 @@ $ docker run -it -p 8888:8888 -p 6006:6006 rawar/deeplearning:latest bash
 und startet die Jupyter-Notebook Anwendung über die Bash mit Hilfe von
 
 ```
-$ ./run_jupyter.sh --allow-root
+$ ./run_jupyter.sh 
 ```
 
 Danach lässt sich die Jupyter-Notebook-Anwendung über einen Webbrowser unter `http://localhost:8888` erreichen.
