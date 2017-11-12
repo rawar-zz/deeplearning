@@ -1,0 +1,2 @@
+model_checkpoint_path: "/Users/rwartala/Documents/praxiseinstieg-deep-learning/src/rawar/deeplearning/docker/notebooks/kapitel4/xor-model-10000iter.tflearn"
+all_model_checkpoint_paths: "/Users/rwartala/Documents/praxiseinstieg-deep-learning/src/rawar/deeplearning/docker/notebooks/kapitel4/xor-model-10000iter.tflearn"
