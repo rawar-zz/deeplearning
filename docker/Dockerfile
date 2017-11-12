@@ -98,19 +98,32 @@ ENV CAFFE2_ROOT=/opt/caffe2
 ENV CAFFE2_INSTALL=/opt
 WORKDIR $CAFFE2_INSTALL
 
-RUN git clone --recursive https://github.com/caffe2/caffe2.git && \
-  cd caffe2 && \
-  make && \
-  cd build && \
-  make install 
+RUN git clone --recursive https://github.com/caffe2/caffe2.git 
+RUN cd caffe2 && mkdir build && cd build \
+    && cmake .. \
+    -DUSE_CUDA=OFF \
+    -DUSE_NNPACK=OFF \
+    -DUSE_ROCKSDB=OFF \
+    && make -j"$(nproc)" install \
+    && ldconfig \
+    && make clean \
+    && cd .. \
+    && rm -rf build
 
-ENV PYCAFFE_ROOT $CAFFE_ROOT2/build
-ENV PYTHONPATH $PYCAFFE2_ROOT:$PYTHONPATH
-ENV PATH $PYCAFFE_ROOT:$PATH
-ENV LD_LIBRARY_PATH=$PYCAFFE_ROOT/caffe2:$LD_LIBRARY_PATH
+ENV PYTHONPATH /usr/local
 
-# export PYTHONPATH=/opt/caffe2/build
-# export LD_LIBRARY_PATH=/opt/caffe2/build/caffe2:$LD_LIBRARY_PATH
+#    cd caffe2 && \
+#    make && \
+#    cd build && \
+#    make install 
+
+#ENV PYCAFFE_ROOT $CAFFE_ROOT2/build
+#ENV PYTHONPATH $PYCAFFE2_ROOT:$PYTHONPATH
+#ENV PATH $PYCAFFE_ROOT:$PATH
+#ENV LD_LIBRARY_PATH=$PYCAFFE_ROOT/caffe2:$LD_LIBRARY_PATH
+
+#ENV  PYTHONPATH=/opt/caffe2/build
+#ENV   export LD_LIBRARY_PATH=/opt/caffe2/build/caffe2:$LD_LIBRARY_PATH
 #RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
 # Install TensorFlow
@@ -168,7 +181,7 @@ RUN curl -sL --retry 3 \
 
 # Install BigDL
 RUN echo "Installiere BigDL..."
-RUN pip --no-cache-dir install BigDL==0.1.1rc0 \
+RUN pip --no-cache-dir install BigDL==0.3.0 \
   seaborn \
   wordcloud
 
@@ -216,24 +229,17 @@ RUN apt-get install sbt
 COPY jupyter_notebook_config.py /root/.jupyter/
 
 # Copy sample notebooks.
-RUN mkdir /root/notebooks
-RUN mkdir /root/notebooks/kapitel1
-RUN mkdir /root/notebooks/kapitel2
-RUN mkdir /root/notebooks/kapitel3
-RUN mkdir /root/notebooks/kapitel4
-RUN mkdir /root/notebooks/kapitel5
-RUN mkdir /root/notebooks/kapitel6
-RUN mkdir /root/notebooks/kapitel7
-RUN mkdir /root/notebooks/kapitel8
 
-#COPY notebooks/kapitel1/* /root/notebooks/kapitel1/
-#COPY notebooks/kapitel2/* /root/notebooks/kapitel2/
-#COPY notebooks/kapitel3/* /root/notebooks/kapitel3/
+RUN mkdir -p /root/notebooks
+RUN mkdir -p /root/notebooks/kapitel1
+RUN mkdir -p /root/notebooks/kapitel4
+RUN mkdir -p /root/notebooks/kapitel5
+RUN mkdir -p /root/notebooks/kapitel6
+
+COPY notebooks/kapitel1/* /root/notebooks/kapitel1/
 COPY notebooks/kapitel4/* /root/notebooks/kapitel4/
 COPY notebooks/kapitel5/* /root/notebooks/kapitel5/
 COPY notebooks/kapitel6/* /root/notebooks/kapitel6/
-#COPY notebooks/kapitel7/* /root/notebooks/kapitel7/
-#COPY notebooks/kapitel8/* /root/notebooks/kapitel8/
 
 
 # Jupyter has issues with being run directly:
