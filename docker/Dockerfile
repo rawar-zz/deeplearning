@@ -72,7 +72,8 @@ RUN pip --no-cache-dir install --upgrade ipython && \
 		sphinx \
 		wheel \
 		zmq \
-    protobuf \
+        protobuf \
+        future \
 		&& \
 	python -m ipykernel.kernelspec
 
@@ -94,37 +95,43 @@ RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git . && \
 
 # Install Caffe2
 RUN echo "Installiere Caffe2..."
-ENV CAFFE2_ROOT=/opt/caffe2
-ENV CAFFE2_INSTALL=/opt
-WORKDIR $CAFFE2_INSTALL
+ENV CAFFE2_ROOT /opt
+WORKDIR $CAFFE2_ROOT
+RUN cd $CAFFE2_ROOT
 
-RUN git clone --recursive https://github.com/caffe2/caffe2.git 
-RUN cd caffe2 && mkdir build && cd build \
+RUN git clone https://github.com/caffe2/caffe2.git \
+    && cd caffe2 \
+    && git submodule deinit -f  third_party/cub \
+    && rm -rf .git/modules/third_party/cub \
+    && git rm -f third_party/cub \
+    && git submodule update --recursive --remote \
+    && git submodule update --init \ 
+    && mkdir build && cd build \
     && cmake .. \
     -DUSE_CUDA=OFF \
     -DUSE_NNPACK=OFF \
     -DUSE_ROCKSDB=OFF \
     && make -j"$(nproc)" install \
     && ldconfig \
-    && make clean \
+    #&& make clean \
     && cd .. \
-    && rm -rf build
+    #&& rm -rf build
 
-ENV PYTHONPATH /usr/local
+#RUN git clone --recursive https://github.com/caffe2/caffe2.git && \
 
-#    cd caffe2 && \
+RUN pip install --upgrade pip \
+    && pip install numpy protobuf hypothesis tflearn
+
+########## INSTALLATION STEPS ###################
+#RUN cd caffe2 && \
 #    make && \
 #    cd build && \
-#    make install 
+#    make install
 
-#ENV PYCAFFE_ROOT $CAFFE_ROOT2/build
-#ENV PYTHONPATH $PYCAFFE2_ROOT:$PYTHONPATH
-#ENV PATH $PYCAFFE_ROOT:$PATH
-#ENV LD_LIBRARY_PATH=$PYCAFFE_ROOT/caffe2:$LD_LIBRARY_PATH
+ENV PYTHONPATH /usr/local
+ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
+RUN python -c 'from caffe2.python import core' 2>/dev/null && echo "Success" || echo "Failure"
 
-#ENV  PYTHONPATH=/opt/caffe2/build
-#ENV   export LD_LIBRARY_PATH=/opt/caffe2/build/caffe2:$LD_LIBRARY_PATH
-#RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
 # Install TensorFlow
 RUN echo "Installiere TensorFlow..."
@@ -181,7 +188,7 @@ RUN curl -sL --retry 3 \
 
 # Install BigDL
 RUN echo "Installiere BigDL..."
-RUN pip --no-cache-dir install BigDL==0.3.0 \
+RUN pip --no-cache-dir install BigDL==0.2.0 \
   seaborn \
   wordcloud
 
@@ -191,16 +198,24 @@ RUN pip --no-cache-dir install awscli
 
 # Install google cloud SDK
 RUN echo "Installiere Google Cloud SDK..."
-ENV CLOUD_SDK_VERSION 161.0.0
-RUN apt-get update
-RUN apt-get install -y apt-transport-https
+ENV CLOUD_SDK_VERSION 165.0.0
 
-RUN export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
+RUN apt-get -qqy update && apt-get install -qqy \
+        curl \
+        gcc \
+        python-dev \
+        python-setuptools \
+        apt-transport-https \
+        lsb-release \
+        openssh-client \
+        git \
+    && easy_install -U pip && \
+    pip install -U crcmod   && \
+    export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
     echo "deb https://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" > /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    curl --retry 3 --insecure https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-    apt-get update
-
-RUN apt-get install -y google-cloud-sdk=${CLOUD_SDK_VERSION}-0 \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+    apt-get update && \
+    apt-get install -y google-cloud-sdk=${CLOUD_SDK_VERSION}-0 \
         google-cloud-sdk-app-engine-python \
         google-cloud-sdk-app-engine-java \
         google-cloud-sdk-app-engine-go \
@@ -208,9 +223,9 @@ RUN apt-get install -y google-cloud-sdk=${CLOUD_SDK_VERSION}-0 \
         google-cloud-sdk-datastore-emulator \
         google-cloud-sdk-pubsub-emulator \
         google-cloud-sdk-bigtable-emulator \
-        kubectl
-
-RUN gcloud config set core/disable_usage_reporting true && \
+        google-cloud-sdk-cbt \
+        kubectl && \
+    gcloud config set core/disable_usage_reporting true && \
     gcloud config set component_manager/disable_update_check true && \
     gcloud config set metrics/environment github_docker_image
 
@@ -229,17 +244,24 @@ RUN apt-get install sbt
 COPY jupyter_notebook_config.py /root/.jupyter/
 
 # Copy sample notebooks.
+RUN mkdir /root/notebooks
+RUN mkdir /root/notebooks/kapitel1
+RUN mkdir /root/notebooks/kapitel2
+RUN mkdir /root/notebooks/kapitel3
+RUN mkdir /root/notebooks/kapitel4
+RUN mkdir /root/notebooks/kapitel5
+RUN mkdir /root/notebooks/kapitel6
+RUN mkdir /root/notebooks/kapitel7
+RUN mkdir /root/notebooks/kapitel8
 
-RUN mkdir -p /root/notebooks
-RUN mkdir -p /root/notebooks/kapitel1
-RUN mkdir -p /root/notebooks/kapitel4
-RUN mkdir -p /root/notebooks/kapitel5
-RUN mkdir -p /root/notebooks/kapitel6
-
-COPY notebooks/kapitel1/* /root/notebooks/kapitel1/
+#COPY notebooks/kapitel1/* /root/notebooks/kapitel1/
+#COPY notebooks/kapitel2/* /root/notebooks/kapitel2/
+#COPY notebooks/kapitel3/* /root/notebooks/kapitel3/
 COPY notebooks/kapitel4/* /root/notebooks/kapitel4/
 COPY notebooks/kapitel5/* /root/notebooks/kapitel5/
 COPY notebooks/kapitel6/* /root/notebooks/kapitel6/
+#COPY notebooks/kapitel7/* /root/notebooks/kapitel7/
+#COPY notebooks/kapitel8/* /root/notebooks/kapitel8/
 
 
 # Jupyter has issues with being run directly:

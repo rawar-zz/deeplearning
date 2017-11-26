@@ -14,5 +14,4 @@
 # limitations under the License.
 # ==============================================================================
 
-
-jupyter notebook "$@" --allow-root --notebook-dir ./notebooks
+ jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
