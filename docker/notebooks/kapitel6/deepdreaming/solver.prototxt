@@ -1,0 +1,15 @@
+net: "train_val.prototxt"
+test_iter: 10
+test_interval: 10000
+test_initialization: false
+display: 20
+base_lr: 0.0005
+lr_policy: "step"
+stepsize: 25000
+gamma: 0.96
+max_iter: 200000
+momentum: 0.9
+weight_decay: 0.0002
+snapshot: 5000
+snapshot_prefix: "tiefschlaf"
+solver_mode: CPU 
